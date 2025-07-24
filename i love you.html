@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>I LOVE YOU</title>
+    <style>
+        /* --- Basic Setup & Centering --- */
+        :root {
+            --grid-cols: 35;
+            --grid-rows: 7;
+            --gap: 3px;
+            --cell-size: 20px;
+            --active-color: #ff007f; /* Vibrant pink */
+            --inactive-color: #2a2a3a; /* Dark blue-gray */
+            --glow-color: rgba(255, 0, 127, 0.7);
+            --bg-color: #12121c; /* Dark background */
+            --container-bg: #1a1a26;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            font-family: 'Inter', sans-serif; /* A clean, modern font */
+            background-color: var(--bg-color);
+            color: #f0f0f0;
+        }
+
+        body {
+            /* Use Flexbox to center the main container perfectly */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* --- Grid Container --- */
+        #grid-container {
+            display: grid;
+            /* Create a 35-column grid */
+            grid-template-columns: repeat(var(--grid-cols), var(--cell-size));
+            gap: var(--gap);
+            background-color: var(--container-bg);
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            width: fit-content; /* Container shrinks to fit the grid */
+        }
+
+        /* --- Individual Grid Cells --- */
+        .grid-cell {
+            width: var(--cell-size);
+            height: var(--cell-size);
+            background-color: var(--inactive-color);
+            border-radius: 4px;
+            opacity: 0; /* Start invisible */
+            
+            /* Smooth transitions for opacity, background color, and shadow */
+            transition: 
+                opacity 0.5s ease-in-out,
+                background-color 0.3s ease,
+                box-shadow 0.3s ease;
+        }
+
+        /* --- Active State for Cells --- */
+        .grid-cell.active {
+            background-color: var(--active-color);
+            opacity: 1; /* Fade in to full visibility */
+            box-shadow: 0 0 15px var(--glow-color); /* Add a nice glow effect */
+        }
+        
+        /* --- Title --- */
+        h1 {
+            margin-bottom: 2rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--active-color);
+            text-shadow: 0 0 10px var(--glow-color);
+        }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 840px) {
+            :root {
+                --cell-size: 15px;
+                --gap: 2px;
+            }
+             h1 {
+                font-size: 1.5rem;
+            }
+        }
+        @media (max-width: 600px) {
+            :root {
+                --cell-size: 10px;
+            }
+            h1 {
+                font-size: 1.2rem;
+            }
+        }
+         @media (max-width: 420px) {
+            :root {
+                --cell-size: 7px;
+            }
+            h1 {
+                font-size: 1rem;
+            }
+        }
+
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap" rel="stylesheet">
+</head>
+<body>
+    <h1>From Me to You</h1>
+    <div id="grid-container"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const gridContainer = document.getElementById('grid-container');
+            const totalCells = 245; // 35 columns * 7 rows
+
+            // --- The data array defining the "I LOVE YOU" shape ---
+            // This remains the same as it's the core data for the message.
+            const messageShape = [
+                [36, 37, 38, 72, 107, 142, 176, 177, 178],
+                [41, 76, 111, 146, 181, 182, 183],
+                [185, 150, 115, 80, 45, 46, 47, 82, 117, 152, 187],
+                [186, 49, 84, 119, 154, 190],
+                [156, 121, 86, 51, 53, 54, 55, 88, 123, 158, 193, 124, 125, 194, 195],
+                [58, 93, 128, 129, 130, 95, 60, 164, 199],
+                [202, 167, 132, 97, 62, 63, 64, 99, 134, 169, 204],
+                [203, 66, 101, 136, 171, 206, 207, 208, 173, 138, 103, 68]
+            ];
+
+            // --- Create the Grid ---
+            // Create all the cell elements and add them to the container.
+            for (let i = 0; i < totalCells; i++) {
+                const cell = document.createElement('div');
+                cell.classList.add('grid-cell');
+                gridContainer.appendChild(cell);
+            }
+
+            // --- Animate the Message ---
+            const allCells = document.querySelectorAll('.grid-cell');
+            let letterIndex = 0; // 'i' from original code
+            let partIndex = 0;   // 'j' from original code
+
+            // We want all cells to fade in first
+            setTimeout(() => {
+                allCells.forEach(cell => cell.style.opacity = '0.2');
+            }, 100);
+
+
+            // The main animation timer
+            const animationTimer = setInterval(() => {
+                // If we've drawn all the letters, stop the timer.
+                if (letterIndex >= messageShape.length) {
+                    clearInterval(animationTimer);
+                    return;
+                }
+
+                // Get the index of the cell to activate from our shape data
+                const cellToActivate = messageShape[letterIndex][partIndex];
+                
+                // Add the 'active' class. CSS handles the visual change.
+                if (allCells[cellToActivate]) {
+                    allCells[cellToActivate].classList.add('active');
+                }
+
+                // Move to the next part of the current letter
+                partIndex++;
+
+                // If we've finished the current letter, move to the next one.
+                if (partIndex >= messageShape[letterIndex].length) {
+                    letterIndex++;
+                    partIndex = 0;
+                }
+            }, 60); // The speed of the drawing animation (in milliseconds)
+        });
+    </script>
+</body>
+</html>
